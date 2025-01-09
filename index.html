@@ -6,6 +6,15 @@
     <title>WhatsApp Sender</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
+    <style>
+      .modal-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+    </style>
   </head>
   <body>
     <!-- Main Content -->
@@ -41,19 +50,22 @@
     </div>
 
     <!-- Modal -->
+    <!-- Modal -->
     <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center p-4">
           <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem">
             <span class="visually-hidden">Loading...</span>
           </div>
-          <h5>Tunggu sebentar...</h5>
+          <h5>Tunggu 5 Detik</h5>
         </div>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script>
+      let messageCount = 1; // Variabel untuk menghitung jumlah pesan
+
       document.getElementById("sendButton").addEventListener("click", function () {
         const phoneInput = document.getElementById("phoneNumber").value.trim();
         const messageInput = document.getElementById("message").value.trim();
@@ -64,37 +76,31 @@
           return;
         }
 
-        // Format nomor menjadi array untuk mengirim ke banyak nomor
-        const phoneNumbers = phoneInput.split(",").map((num) => num.trim());
-        const message = messageInput;
-        const delayMin = 3000; // Jeda minimum 3 detik
-        const delayMax = 7000; // Jeda maksimum 7 detik
+        // Tampilkan modal loading
+        const loadingModal = new bootstrap.Modal(document.getElementById("loadingModal"));
+        loadingModal.show();
 
-        const sendMessages = async () => {
-          for (let i = 0; i < phoneNumbers.length; i++) {
-            const phoneNumber = phoneNumbers[i].startsWith("0") ? "+62" + phoneNumbers[i].slice(1) : phoneNumbers[i];
+        // Simulate loading for 5 seconds
+        setTimeout(() => {
+          // Format nomor menjadi format internasional
+          const phoneNumber = phoneInput.startsWith("0") ? "+62" + phoneInput.slice(1) : phoneInput;
 
-            // Tambahkan elemen dinamis pada pesan (contoh: nomor urut)
-            const dynamicMessage = `${message} ${i + 1}`;
+          // Tambahkan angka dan emotikon ke pesan untuk membuatnya dinamis
+          const dynamicMessage = `${messageInput} (${messageCount}✨)`;
+          messageCount++; // Tingkatkan angka untuk pesan berikutnya
 
-            // Encode pesan untuk memastikan URL valid
-            const encodedMessage = encodeURIComponent(dynamicMessage);
+          // Encode pesan untuk memastikan URL valid
+          const encodedMessage = encodeURIComponent(dynamicMessage);
 
-            // URL WhatsApp
-            const waUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+          // URL WhatsApp Business
+          const waBusinessUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodedMessage}`;
 
-            // Buka URL WhatsApp
-            window.open(waUrl, "_blank");
+          // Redirect ke URL WhatsApp Business
+          window.open(waBusinessUrl, "_blank");
 
-            // Tunggu sebelum mengirim ke nomor berikutnya
-            const randomDelay = Math.floor(Math.random() * (delayMax - delayMin + 1)) + delayMin;
-            await new Promise((resolve) => setTimeout(resolve, randomDelay));
-          }
-
-          alert("Semua pesan telah dikirim!");
-        };
-
-        sendMessages();
+          // Sembunyikan modal setelah pesan dikirim
+          loadingModal.hide();
+        }, 5000);
       });
     </script>
   </body>
