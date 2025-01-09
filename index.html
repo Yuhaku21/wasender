@@ -64,27 +64,37 @@
           return;
         }
 
-        // Tampilkan modal loading
-        const loadingModal = new bootstrap.Modal(document.getElementById("loadingModal"));
-        loadingModal.show();
+        // Format nomor menjadi array untuk mengirim ke banyak nomor
+        const phoneNumbers = phoneInput.split(",").map((num) => num.trim());
+        const message = messageInput;
+        const delayMin = 3000; // Jeda minimum 3 detik
+        const delayMax = 7000; // Jeda maksimum 7 detik
 
-        // Simulate loading for 5 seconds
-        setTimeout(() => {
-          // Format nomor menjadi format internasional
-          const phoneNumber = phoneInput.startsWith("0") ? "+62" + phoneInput.slice(1) : phoneInput;
+        const sendMessages = async () => {
+          for (let i = 0; i < phoneNumbers.length; i++) {
+            const phoneNumber = phoneNumbers[i].startsWith("0") ? "+62" + phoneNumbers[i].slice(1) : phoneNumbers[i];
 
-          // Encode pesan untuk memastikan URL valid
-          const encodedMessage = encodeURIComponent(messageInput);
+            // Tambahkan elemen dinamis pada pesan (contoh: nomor urut)
+            const dynamicMessage = `${message} (Pesan ke-${i + 1})`;
 
-          // URL WhatsApp
-          const waUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            // Encode pesan untuk memastikan URL valid
+            const encodedMessage = encodeURIComponent(dynamicMessage);
 
-          // Redirect ke URL WhatsApp
-          window.open(waUrl, "_blank");
+            // URL WhatsApp
+            const waUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
-          // Sembunyikan modal setelah pesan dikirim
-          loadingModal.hide();
-        }, 5000);
+            // Buka URL WhatsApp
+            window.open(waUrl, "_blank");
+
+            // Tunggu sebelum mengirim ke nomor berikutnya
+            const randomDelay = Math.floor(Math.random() * (delayMax - delayMin + 1)) + delayMin;
+            await new Promise((resolve) => setTimeout(resolve, randomDelay));
+          }
+
+          alert("Semua pesan telah dikirim!");
+        };
+
+        sendMessages();
       });
     </script>
   </body>
