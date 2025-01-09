@@ -75,7 +75,7 @@
             const phoneNumber = phoneNumbers[i].startsWith("0") ? "+62" + phoneNumbers[i].slice(1) : phoneNumbers[i];
 
             // Tambahkan elemen dinamis pada pesan (contoh: nomor urut)
-            const dynamicMessage = `${message} (${i + 1})`;
+            const dynamicMessage = `${message} ${i + 1}`;
 
             // Encode pesan untuk memastikan URL valid
             const encodedMessage = encodeURIComponent(dynamicMessage);
